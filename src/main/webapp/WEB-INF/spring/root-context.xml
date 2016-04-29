@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+        destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:8889/passtime_altr?zeroDateTimeBehavior=convertToNull" />
+        <property name="username" value="root" />
+        <property name="password" value="root" />
+    </bean>
+    <bean id="sessionFactory"  class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="packagesToScan">
+            <list>
+                <value>com.passtime.passtimeappli.Model</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+          <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.use_sql_comments">true</prop>
+                <prop key="hibernate.format_sql">false</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.generate_statistics">true</prop>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.connection.characterEncoding">UTF-8</prop> 
+                <!-- c3p0 properties
+                <prop key="hibernate.c3p0.min_size">2</prop>
+                <prop key="hibernate.c3p0.max_size">50</prop>
+                <prop key="hibernate.c3p0.maxPoolSize">50</prop>
+                <prop key="hibernate.c3p0.minPoolSize">2</prop>
+                <prop key="hibernate.c3p0.initialPoolSize">2</prop>
+                <prop key="hibernate.c3p0.timeout">300</prop>
+                <prop key="hibernate.c3p0.max_statements">50</prop>   
+                -->    
+            </props>
+        </property>
+    </bean>
+ <tx:annotation-driven transaction-manager="transactionManager"/>
+
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+	    <property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<bean id="addressDao" class="com.passtime.passtimeappli.Dao.AddressDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<bean id="addressService" class="com.passtime.passtimeappli.Service.AddressService">
+		<property name="addressDao" ref="addressDao"/>
+	</bean>
+	<bean id="accountDao" class="com.passtime.passtimeappli.Dao.AccountDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<bean id="accountService" class="com.passtime.passtimeappli.Service.AccountService">
+		<property name="accountDao" ref="accountDao"/>
+	</bean>
+	<bean id="partnerDao" class="com.passtime.passtimeappli.Dao.PartnerDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<bean id="partnerService" class="com.passtime.passtimeappli.Service.PartnerService">
+		<property name="partnerDao" ref="partnerDao"/>
+	</bean>
+</beans>
